@@ -1,5 +1,5 @@
 import Close from "@material-ui/icons/Close";
-import { useState, ChangeEvent } from "react";
+import { useState } from "react";
 import SearchInput from "../components/Input/SearchInput";
 import {
   Button,
@@ -10,15 +10,11 @@ import {
   TableCell,
   Link,
   Drawer,
-  TextField,
   Typography,
-  FormControl,
-  Select,
-  MenuItem,
-  InputLabel,
 } from "@material-ui/core";
 import { SyntheticEvent } from "react";
 import Datastore from "nedb";
+import { useForm } from "react-hook-form";
 
 const db = {
   projects: new Datastore({
@@ -43,14 +39,24 @@ export async function getServerSideProps() {
   const projects = await getProjects();
   return {
     props: {
-      tableContent: projects,
+      projects,
     }, // will be passed to the page component as props
   };
 }
 
-export default function Projects(props: any) {
+interface ProjectsPageProps {
+  projects: Projects[];
+}
+
+interface Projects {
+  name: string;
+  key: string;
+  template: string;
+  lead: string;
+}
+
+export default function Projects({ projects }: ProjectsPageProps) {
   const [drawerState, setDrawerState] = useState(false);
-  const [template, setTemplate] = useState("");
 
   const handleLeadClick = (e: SyntheticEvent) => {
     e.preventDefault();
@@ -58,15 +64,6 @@ export default function Projects(props: any) {
 
   const handleNameClick = (e: SyntheticEvent) => {
     e.preventDefault();
-  };
-
-  const handleSelectedTemplate = (e: ChangeEvent<HTMLSelectElement>) => {
-    setTemplate(e.target.value);
-  };
-
-  const handleFormSubmit = (e: any) => {
-    e.preventDefault();
-    console.info(e);
   };
 
   return (
@@ -80,36 +77,7 @@ export default function Projects(props: any) {
             <div></div>
             <div>
               <Typography variant="h5">Create Project</Typography>
-              <form
-                className="mt-4 flex flex-col gap-10"
-                onSubmit={handleFormSubmit}
-              >
-                <TextField
-                  required
-                  label="Name"
-                  variant="outlined"
-                  placeholder="Enter a project name"
-                />
-                <TextField required label="Key" variant="outlined" />
-                <FormControl>
-                  <InputLabel id="project-select">Template</InputLabel>
-                  <Select
-                    value={template}
-                    onChange={(e) => handleSelectedTemplate(e)}
-                  >
-                    <MenuItem value="scrum">Scrum</MenuItem>
-                    <MenuItem value="kanban">Kanban</MenuItem>
-                  </Select>
-                </FormControl>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  size="small"
-                  className="w-24"
-                >
-                  Create
-                </Button>
-              </form>
+              <CreateProjectForm projects={projects}></CreateProjectForm>
             </div>
           </div>
         </div>
@@ -145,7 +113,7 @@ export default function Projects(props: any) {
               </TableRow>
             </TableHead>
             <TableBody>
-              {props.tableContent?.map((row: any) => {
+              {projects?.map((row: any) => {
                 return (
                   <TableRow key={row.name}>
                     <TableCell>
@@ -170,3 +138,91 @@ export default function Projects(props: any) {
     </>
   );
 }
+
+interface CreateProject {
+  projectName: string;
+  projectKey: string;
+}
+
+const CreateProjectForm = ({ projects }: { projects: Projects[] }) => {
+  const { handleSubmit, register, errors } = useForm<CreateProject>({
+    mode: "onChange",
+  });
+  console.info("errors", errors);
+  const handleFormSubmit = (formData: CreateProject) => {
+    // check if there is any entry with the projectName
+    console.info(formData);
+  };
+
+  return (
+    <form
+      className="mt-4 flex flex-col"
+      onSubmit={handleSubmit(handleFormSubmit)}
+      autoComplete="off"
+    >
+      <div className="flex flex-col">
+        <label htmlFor="projectName" className="text-xs text-gray-600">
+          Name <span className="text-red-400">*</span>
+        </label>
+        <input
+          name="projectName"
+          className={`w-40 border-2 border-${
+            errors.projectName ? "red" : "gray"
+          }-400 focus:bg-white focus:border-${
+            errors.projectName ? "red" : "blue"
+          }-400 focus:outline-none h-8 pl-2 rounded mb-2 hover:bg-gray-300 text-black`}
+          title="Please fill out this field"
+          type="text"
+          ref={register({
+            required: true,
+            validate: async (val: string) => {
+              return !projects.find((project) => project.name === val);
+            },
+          })}
+          placeholder="Enter a project name"
+        ></input>
+        <div className="text-red-400 text-xs">
+          {errors.projectName?.type === "required" && "This field is required"}
+          {errors.projectName?.type === "validate" &&
+            "A project with that name already exists"}
+        </div>
+      </div>
+      <div>
+        <span className="text-xs text-gray-600">Access</span>
+        <p className="my-2 text-xs text-gray-500">
+          Anyone with access to jira-clone can access and administer this
+          project. Upgrade your plan to customize project permissions.
+        </p>
+      </div>
+      <div className="flex flex-col">
+        <label htmlFor="projectKey" className="text-xs text-gray-600">
+          Key <span className="text-red-400">*</span>
+        </label>
+        <input
+          name="projectKey"
+          className={`w-40 border-2 border-${
+            errors.projectKey ? "red" : "gray"
+          }-400 focus:bg-white focus:border-${
+            errors.projectKey ? "red" : "blue"
+          }-400 focus:outline-none h-8 pl-2 rounded mb-2 hover:bg-gray-300 text-black`}
+          type="text"
+          ref={register({
+            required: "This field is required",
+          })}
+        ></input>
+        <span className="text-xs text-red-400">
+          {errors.projectKey && errors.projectKey.message}
+        </span>
+      </div>
+
+      <div className="flex justify-end mt-10">
+        <button
+          type="submit"
+          className="bg-blue-600 text-white py-1 px-2 rounded"
+        >
+          Create
+        </button>
+      </div>
+    </form>
+  );
+};
