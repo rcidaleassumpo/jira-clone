@@ -13,27 +13,8 @@ import {
   Typography,
 } from "@material-ui/core";
 import { SyntheticEvent } from "react";
-import Datastore from "nedb";
 import { useForm } from "react-hook-form";
-
-const db = {
-  projects: new Datastore({
-    autoload: true,
-    filename: "projects.db",
-  }),
-};
-
-function getProjects() {
-  return new Promise((res, rej) => {
-    db.projects.find({}, (err: any, docs: any) => {
-      if (err) {
-        rej(err);
-      } else {
-        res(docs);
-      }
-    });
-  });
-}
+import { getProjects } from "../db/models/projects";
 
 export async function getServerSideProps() {
   const projects = await getProjects();
@@ -77,7 +58,7 @@ export default function Projects({ projects }: ProjectsPageProps) {
             <div></div>
             <div>
               <Typography variant="h5">Create Project</Typography>
-              <CreateProjectForm projects={projects}></CreateProjectForm>
+              <CreateProjectForm></CreateProjectForm>
             </div>
           </div>
         </div>
@@ -144,7 +125,7 @@ interface CreateProject {
   projectKey: string;
 }
 
-const CreateProjectForm = ({ projects }: { projects: Projects[] }) => {
+const CreateProjectForm = () => {
   const { handleSubmit, register, errors } = useForm<CreateProject>({
     mode: "onChange",
   });
@@ -152,6 +133,16 @@ const CreateProjectForm = ({ projects }: { projects: Projects[] }) => {
   const handleFormSubmit = (formData: CreateProject) => {
     // check if there is any entry with the projectName
     console.info(formData);
+  };
+  const validateProjectName = async (projectName: string) => {
+    const response = await fetch("/api/projects", {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name: projectName }),
+      method: "POST",
+    });
+    return response.json();
   };
 
   return (
@@ -176,7 +167,8 @@ const CreateProjectForm = ({ projects }: { projects: Projects[] }) => {
           ref={register({
             required: true,
             validate: async (val: string) => {
-              return !projects.find((project) => project.name === val);
+              const { data } = await validateProjectName(val);
+              return data;
             },
           })}
           placeholder="Enter a project name"
