@@ -1,38 +1,29 @@
-import SearchIcon from "../Icons/SearchIcon";
-import { FunctionComponent, ChangeEvent } from "react";
+import React, { FunctionComponent } from "react";
+import InputBase from "@material-ui/core/InputBase";
+import IconButton from "@material-ui/core/IconButton";
+import SearchIcon from "@material-ui/icons/Search";
 
 interface SearchInputProps {
-  alignIcon?: "right" | "left";
-  onChange?: (val: string) => void;
+  placeholder?: string;
+  size?: "small" | "medium";
 }
 
-export const SearchInput: FunctionComponent<SearchInputProps> = ({
-  alignIcon = "left",
-  onChange,
+export const CustomizedInputBase: FunctionComponent<SearchInputProps> = ({
+  placeholder,
+  size,
 }) => {
-  const handleInputChange = (val: ChangeEvent<HTMLInputElement>) =>
-    onChange && onChange(val.target.value);
-
   return (
-    <span className="relative flex-initial">
-      <span
-        className={`absolute ${
-          alignIcon === "right" ? "right-0" : ""
-        } m-2 text-gray-600 w-4 h-4 focus:outline-none focus:shadow-outline`}
-        tabIndex={1}
-      >
-        <SearchIcon></SearchIcon>
-      </span>
-      <input
-        type="text"
-        onChange={handleInputChange}
-        placeholder="Search"
-        className={`border-2 border-gray-300 rounded ${
-          alignIcon === "left" ? "pl-8" : "pl-2"
-        } focus:outline-none focus:shadow-outline`}
+    <>
+      <InputBase
+        className="pl-3"
+        placeholder={placeholder}
+        inputProps={{ "aria-label": "Search" }}
       />
-    </span>
+      <IconButton size={size} type="submit" aria-label="search">
+        <SearchIcon />
+      </IconButton>
+    </>
   );
 };
 
-export default SearchInput;
+export default CustomizedInputBase;

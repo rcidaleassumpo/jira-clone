@@ -1,28 +1,63 @@
 import "../styles/index.css";
-import Nav from "../components/Nav";
-import MenuIcon from "../components/Icons/MenuIcon";
+import React from "react";
+import Head from "next/head";
+import { ThemeProvider } from "@material-ui/core/styles";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import theme from "../utils/theme";
+import {
+  AppBar,
+  Toolbar,
+  IconButton,
+  Button,
+  Grid,
+  Box,
+} from "@material-ui/core";
+import MenuIcon from "@material-ui/icons/Menu";
 import SearchInput from "../components/Input/SearchInput";
 
-function MyApp({ Component, pageProps }: { Component: any; pageProps: any }) {
-  const handleChange = (val: string) => {
-    console.info(val);
-  };
+export default function MyApp(props: any) {
+  const { Component, pageProps } = props;
+
+  React.useEffect(() => {
+    // Remove the server-side injected CSS.
+    const jssStyles = document.querySelector("#jss-server-side");
+    if (jssStyles) {
+      jssStyles?.parentElement?.removeChild(jssStyles);
+    }
+  }, []);
+
   return (
-    <>
-      <Nav>
-        <div className="flex">
-          <MenuIcon></MenuIcon>
-          <h1 className="ml-2">Jira Clone</h1>
-        </div>
-        <div>
-          <SearchInput onChange={handleChange}></SearchInput>
-        </div>
-      </Nav>
-      <div className="p-8 pt-2">
+    <React.Fragment>
+      <Head>
+        <title>My page</title>
+        <meta
+          name="viewport"
+          content="minimum-scale=1, initial-scale=1, width=device-width"
+        />
+      </Head>
+      <ThemeProvider theme={theme}>
+        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+        <CssBaseline />
+        <AppBar position="static">
+          <Toolbar>
+            <Grid container justify="space-between">
+              <Box className="flex" alignItems="center">
+                <IconButton edge="start" color="inherit" aria-label="menu">
+                  <MenuIcon />
+                </IconButton>
+                <h2>Jira Clone</h2>
+              </Box>
+              <Box className="flex" alignItems="center">
+                <div className="bg-white rounded w-56 flex">
+                  <SearchInput size="small"></SearchInput>
+                </div>
+                <Button color="inherit">Login</Button>
+              </Box>
+            </Grid>
+          </Toolbar>
+        </AppBar>
         <Component {...pageProps} />
-      </div>
-    </>
+      </ThemeProvider>
+    </React.Fragment>
   );
 }
-
-export default MyApp;
