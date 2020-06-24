@@ -120,30 +120,44 @@ export default function Projects({ projects }: ProjectsPageProps) {
   );
 }
 
-interface CreateProject {
+export interface CreateProject {
   projectName: string;
   projectKey: string;
 }
 
 const CreateProjectForm = () => {
-  const { handleSubmit, register, errors } = useForm<CreateProject>({
+  const { handleSubmit, register, setError, watch, errors } = useForm<
+    CreateProject
+  >({
     mode: "onChange",
   });
-  console.info("errors", errors);
-  const handleFormSubmit = (formData: CreateProject) => {
+  const handleFormSubmit = async (formData: CreateProject) => {
     // check if there is any entry with the projectName
     // to get here all fields should be fine
+    // Now I should post the form, then if ok the list of projects
+    // should be updated.
+    try {
+      await fetch("/api/projects", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.projectName,
+          key: formData.projectKey,
+        }),
+        method: "POST",
+      });
+    } catch {
+      console.log("Something wrong happened");
+    }
   };
-  const validateProjectName = async (projectName: string) => {
-    const response = await fetch("/api/validate", {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name: projectName }),
-      method: "POST",
-    });
+  const validateKeyValPair = async (validateObj: {}) => {
+    const searchParams = new URLSearchParams(validateObj);
+    const response = await fetch(`/api/validate?${searchParams.toString()}`);
     return response.json();
   };
+  console.info("errors", errors);
+  const projectKey = watch("projectName");
 
   return (
     <form
@@ -167,8 +181,8 @@ const CreateProjectForm = () => {
           ref={register({
             required: true,
             validate: async (val: string) => {
-              const { data } = await validateProjectName(val);
-              return data;
+              const { data } = await validateKeyValPair({ name: val });
+              return data.validation;
             },
           })}
           placeholder="Enter a project name"
@@ -198,6 +212,21 @@ const CreateProjectForm = () => {
             errors.projectKey ? "red" : "blue"
           }-400 focus:outline-none h-8 pl-2 rounded mb-2 hover:bg-gray-300 text-black`}
           type="text"
+          onChange={async (e: any) => {
+            const value = e.target.value;
+            if (value === projectKey) {
+              // sometimes you gotta cheat ;)
+              return setError("projectName" as any);
+            }
+            const { data } = await validateKeyValPair({ key: value });
+            if (!data.validation) {
+              setError(
+                "projectKey",
+                "validate",
+                `Project '${data.project.name}' uses this project key`
+              );
+            }
+          }}
           ref={register({
             required: "This field is required",
           })}

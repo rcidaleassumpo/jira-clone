@@ -1,1 +1,2 @@
-{"name":"jira-test","key":"JT","type":"Classic business","lead":"Renan Cidale","_id":"3pRXDjgNHvlm2yGX"}
+{"name":"jira-test","key":"JT","type":"Classic Business","lead":"Renan Cidale","template":"Kanban","_id":"gXlsgsVl7SJjZyqO"}
+{"name":"jira-test2","key":"JTA","type":"Classic Business","lead":"Renan Cidale","template":"Kanban","_id":"vlzamVzGLoOb9AXL"}
