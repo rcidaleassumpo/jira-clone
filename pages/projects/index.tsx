@@ -1,6 +1,6 @@
 import Close from "@material-ui/icons/Close";
 import { useState } from "react";
-import SearchInput from "../components/Input/SearchInput";
+import SearchInput from "../../components/Input/SearchInput";
 import {
   Button,
   Table,
@@ -14,7 +14,7 @@ import {
 } from "@material-ui/core";
 import { SyntheticEvent } from "react";
 import { useForm } from "react-hook-form";
-import { getProjects } from "../db/models/projects";
+import { getProjects } from "../../db/models/projects";
 
 export async function getServerSideProps() {
   const projects = await getProjects();

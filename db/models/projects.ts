@@ -1,7 +1,18 @@
 import db from "../index";
 import { CreateProject } from "../../pages/projects";
 
-export function getProjects() {
+export interface Issue {}
+
+export interface Project {
+  name: string;
+  type: string;
+  lead: string;
+  template: string;
+  key: string;
+  issues: Issue[];
+}
+
+export function getProjects(): Promise<Project[]> {
   return new Promise((res, rej) => {
     db.projects.find({}, (err: any, docs: any) => {
       if (err) {

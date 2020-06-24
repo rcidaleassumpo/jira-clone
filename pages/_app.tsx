@@ -11,6 +11,7 @@ import {
   Button,
   Grid,
   Box,
+  Typography,
 } from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
 import SearchInput from "../components/Input/SearchInput";
@@ -41,11 +42,11 @@ export default function MyApp(props: any) {
         <AppBar position="static">
           <Toolbar>
             <Grid container justify="space-between">
-              <Box className="flex" alignItems="center">
+              <Box className="flex items-center" alignItems="center">
                 <IconButton edge="start" color="inherit" aria-label="menu">
                   <MenuIcon />
                 </IconButton>
-                <h2>Jira Clone</h2>
+                <Typography variant="h5">Jira Clone</Typography>
               </Box>
               <Box className="flex" alignItems="center">
                 <div className="bg-white rounded w-56 flex">

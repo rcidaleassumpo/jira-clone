@@ -8,7 +8,7 @@ interface SearchInputProps {
   size?: "small" | "medium";
 }
 
-export const CustomizedInputBase: FunctionComponent<SearchInputProps> = ({
+export const SearchInput: FunctionComponent<SearchInputProps> = ({
   placeholder,
   size,
 }) => {
@@ -26,4 +26,4 @@ export const CustomizedInputBase: FunctionComponent<SearchInputProps> = ({
   );
 };
 
-export default CustomizedInputBase;
+export default SearchInput;
