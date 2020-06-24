@@ -132,10 +132,10 @@ const CreateProjectForm = () => {
   console.info("errors", errors);
   const handleFormSubmit = (formData: CreateProject) => {
     // check if there is any entry with the projectName
-    console.info(formData);
+    // to get here all fields should be fine
   };
   const validateProjectName = async (projectName: string) => {
-    const response = await fetch("/api/projects", {
+    const response = await fetch("/api/validate", {
       headers: {
         "Content-Type": "application/json",
       },
