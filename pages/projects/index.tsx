@@ -71,15 +71,6 @@ export default function Projects({ projects }: ProjectsPageProps) {
           >
             Create project
           </Button>
-          <button
-            onClick={() => {
-              fetch("/api/projects", { method: "DELETE" })
-                .then(console.info)
-                .catch(console.error);
-            }}
-          >
-            Delete All
-          </button>
         </div>
         <div>
           <div className="flex border border-gray-300 rounded w-56">
