@@ -25,6 +25,7 @@ class ProjectsService {
   private async parseResponse(response: any) {
     return JSON.parse(JSON.stringify(await response));
   }
+
   async getProjects() {
     await this.start();
     return this.parseResponse(this.projectCollection.find().toArray());
