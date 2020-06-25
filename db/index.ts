@@ -15,10 +15,9 @@ export default class Database {
   }
 
   async start() {
-    console.info("db name..", process.env.MONGO_DB_NAME);
-    console.info("connection started...");
-    this.connection = await this.client.connect();
-    console.info("connection..", this.connection);
+    if (!this.connection) {
+      this.connection = await this.client.connect();
+    }
     return this.connection.db(process.env.MONGO_DB_NAME);
   }
 }
