@@ -9,10 +9,10 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Link,
   Drawer,
   Typography,
 } from "@material-ui/core";
+import Link from "next/link";
 import { SyntheticEvent } from "react";
 import { useForm } from "react-hook-form";
 import ProjectsService from "../../db/models/projects";
@@ -39,14 +39,6 @@ interface Projects {
 
 export default function Projects({ projects }: ProjectsPageProps) {
   const [drawerState, setDrawerState] = useState(false);
-
-  const handleLeadClick = (e: SyntheticEvent) => {
-    e.preventDefault();
-  };
-
-  const handleNameClick = (e: SyntheticEvent) => {
-    e.preventDefault();
-  };
 
   return (
     <>
@@ -108,16 +100,17 @@ export default function Projects({ projects }: ProjectsPageProps) {
                 return (
                   <TableRow key={row.name}>
                     <TableCell>
-                      <Link href="#" onClick={handleNameClick}>
-                        {row.name}
+                      <Link
+                        href="/projects/[projectKey]"
+                        as={`/projects/${row.key}`}
+                      >
+                        <a>{row.name}</a>
                       </Link>
                     </TableCell>
                     <TableCell>{row.key}</TableCell>
                     <TableCell>{row.type}</TableCell>
                     <TableCell>
-                      <Link href="#" onClick={handleLeadClick}>
-                        {row.lead}
-                      </Link>
+                      <Link href="#">{row.lead}</Link>
                     </TableCell>
                   </TableRow>
                 );
@@ -158,7 +151,7 @@ const CreateProjectForm = () => {
         }),
         method: "POST",
       });
-      router.push(`/projects/${projectKey}`);
+      router.push(`/projects/${formData.projectKey}`);
     } catch (e) {
       console.info(e);
       console.log("Something wrong happened");

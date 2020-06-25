@@ -1,13 +1,11 @@
 import { MongoClient } from "mongodb";
 
-export default class Database {
+class Database {
   connection: any;
   db: any;
   client: any;
   constructor() {
     const mongoURL = process.env.MONGO_DB_URL || "";
-    console.info("mongoURL", mongoURL);
-    console.info("db name..", process.env.MONGO_DB_NAME);
     this.client = new MongoClient(mongoURL, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
@@ -21,3 +19,5 @@ export default class Database {
     return this.connection.db(process.env.MONGO_DB_NAME);
   }
 }
+
+export default new Database();

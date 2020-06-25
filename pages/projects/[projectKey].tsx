@@ -1,8 +1,10 @@
 import ProjectsService, { Project } from "../../db/models/projects";
 import { GetServerSideProps } from "next";
-import { Breadcrumbs, Link, Typography } from "@material-ui/core";
+import Link from "next/link";
+import { Breadcrumbs, Typography } from "@material-ui/core";
 import { useState } from "react";
 import AddIcon from "@material-ui/icons/Add";
+import Error from "next/error";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   // get the project with id context.query.projectKey
@@ -15,7 +17,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   };
 };
-export default function Example({ project }: { project: Project }) {
+export default function Example({ project }: { project?: Project }) {
   // First step. markup
   const [create, setCreate] = useState(false);
   const [createContent, setCreateContent] = useState("");
@@ -23,14 +25,16 @@ export default function Example({ project }: { project: Project }) {
     console.info("process saving of content..", createContent);
   };
 
-  return (
+  return project == null ? (
+    <Error statusCode={404} />
+  ) : (
     <div className="p-6">
       <Breadcrumbs>
-        <Link href="#">
-          <span className="text-gray-500 text-sm">Projects</span>
+        <Link href="/projects">
+          <a className="text-gray-500 text-sm">Projects</a>
         </Link>
-        <Link href="#">
-          <span className="text-gray-500 text-sm">{project.name}</span>
+        <Link href="/projects/[projectKey]" as={`/projects/${project.key}`}>
+          <a className="text-gray-500 text-sm">{project.name}</a>
         </Link>
       </Breadcrumbs>
       <Typography variant="h6">Board</Typography>

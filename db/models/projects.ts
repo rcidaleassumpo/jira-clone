@@ -1,5 +1,5 @@
 // import { CreateProject } from "../../pages/projects";
-import Database from "../index";
+import db from "../index";
 
 export interface Issue {}
 
@@ -18,7 +18,7 @@ class ProjectsService {
   constructor() {}
 
   private async start() {
-    this.db = await new Database().start();
+    this.db = await db.start();
     this.projectCollection = await this.db.collection("projects");
   }
 
@@ -34,7 +34,7 @@ class ProjectsService {
   async getProject(query: any): Promise<null | Project> {
     await this.start();
     const result = await this.projectCollection.findOne(query);
-    return result;
+    return this.parseResponse(result);
   }
 
   async deleteAll() {
