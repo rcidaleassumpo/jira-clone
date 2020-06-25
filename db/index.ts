@@ -6,6 +6,8 @@ export default class Database {
   client: any;
   constructor() {
     const mongoURL = process.env.MONGO_DB_URL || "";
+    console.info("mongoURL", mongoURL);
+    console.info("db name..", process.env.MONGO_DB_NAME);
     this.client = new MongoClient(mongoURL, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
@@ -13,8 +15,9 @@ export default class Database {
   }
 
   async start() {
-    this.connection = await this.client.connect();
     console.info("db name..", process.env.MONGO_DB_NAME);
+    console.info("connection started...");
+    this.connection = await this.client.connect();
     console.info("connection..", this.connection);
     return this.connection.db(process.env.MONGO_DB_NAME);
   }
