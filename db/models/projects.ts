@@ -26,7 +26,7 @@ export function getProjects(): Promise<Project[]> {
 
 export function getProjectByQuery(objToValidate: any) {
   return new Promise((res, rej) => {
-    db.projects.findOne(objToValidate, (e, doc) => {
+    db.projects.findOne(objToValidate, (_, doc) => {
       try {
         res(doc);
       } catch (e) {

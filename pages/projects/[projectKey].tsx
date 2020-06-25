@@ -1,7 +1,7 @@
 import { getProjectByQuery, Project } from "../../db/models/projects";
 import { GetServerSideProps } from "next";
-import { Breadcrumbs, Link, Typography, Button } from "@material-ui/core";
-import { useState, useRef, useEffect, createRef } from "react";
+import { Breadcrumbs, Link, Typography } from "@material-ui/core";
+import { useState } from "react";
 import AddIcon from "@material-ui/icons/Add";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
