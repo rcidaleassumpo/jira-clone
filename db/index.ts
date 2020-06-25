@@ -6,10 +6,15 @@ export default class Database {
   client: any;
   constructor() {
     const mongoURL = process.env.MONGO_DB_URL || "";
-    this.client = new MongoClient(mongoURL, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    console.info("MONGOurl", mongoURL);
+    try {
+      this.client = new MongoClient(mongoURL, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      });
+    } catch (e) {
+      console.error("something wrong happpend,...", e);
+    }
   }
 
   async start() {
