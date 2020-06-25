@@ -13,7 +13,6 @@ import {
   Typography,
 } from "@material-ui/core";
 import Link from "next/link";
-import { SyntheticEvent } from "react";
 import { useForm } from "react-hook-form";
 import ProjectsService from "../../db/models/projects";
 
