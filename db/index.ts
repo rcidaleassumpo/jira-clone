@@ -8,7 +8,7 @@ export default class Database {
     const mongoURL = process.env.MONGO_DB_URL || "";
     this.client = new MongoClient(mongoURL, {
       useNewUrlParser: true,
-      useUnifiedTopology: true,
+      // useUnifiedTopology: true,
     });
   }
 
