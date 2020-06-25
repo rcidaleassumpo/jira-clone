@@ -1,4 +1,4 @@
-import { getProjectByQuery, Project } from "../../db/models/projects";
+import ProjectsService, { Project } from "../../db/models/projects";
 import { GetServerSideProps } from "next";
 import { Breadcrumbs, Link, Typography } from "@material-ui/core";
 import { useState } from "react";
@@ -8,8 +8,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   // get the project with id context.query.projectKey
   // need to know how to "crash" if projectKey is not found
   const projectKey = context.query.projectKey;
-  console.info("projectKey", projectKey);
-  const project = await getProjectByQuery({ key: projectKey });
+  const project = await ProjectsService.getProject({ key: projectKey });
   return {
     props: {
       project,

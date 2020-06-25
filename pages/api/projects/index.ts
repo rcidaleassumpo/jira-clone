@@ -1,15 +1,14 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { insertProject } from "../../../db/models/projects";
+import ProjectService from "../../../db/models/projects";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   switch (req.method) {
     case "POST":
-      try {
-        await insertProject(req.body);
-        res.status(201).send("ok");
-      } catch {
-        res.status(500).send({ message: "notok" });
-      }
+      await ProjectService.insertProject(req.body);
+      return res.status(201).send("ok");
+    case "DELETE":
+      await ProjectService.deleteAll();
+      return res.status(201).send("ok");
   }
 };
 

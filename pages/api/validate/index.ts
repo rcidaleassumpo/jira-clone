@@ -1,11 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getProjectByQuery } from "../../../db/models/projects";
+import ProjectService from "../../../db/models/projects";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   switch (req.method) {
     case "GET":
-      const project = await getProjectByQuery(req.query);
-      res.json({ data: { validation: !project, project } });
+      const project = await ProjectService.getProject(req.query);
+      res.json({ data: project });
   }
 };
 

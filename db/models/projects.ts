@@ -1,5 +1,5 @@
-import db from "../index";
-import { CreateProject } from "../../pages/projects";
+// import { CreateProject } from "../../pages/projects";
+import Database from "../index";
 
 export interface Issue {}
 
@@ -12,50 +12,47 @@ export interface Project {
   issues: Issue[];
 }
 
-export function getProjects(): Promise<Project[]> {
-  return new Promise((res, rej) => {
-    db.projects.find({}, (err: any, docs: any) => {
-      if (err) {
-        rej(err);
-      } else {
-        res(docs);
-      }
+class ProjectsService {
+  private db: any;
+  private projectCollection: any;
+  constructor() {}
+
+  private async start() {
+    this.db = await new Database().start();
+    this.projectCollection = await this.db.collection("projects");
+  }
+
+  private async parseResponse(response: any) {
+    return JSON.parse(JSON.stringify(await response));
+  }
+  async getProjects() {
+    await this.start();
+    return this.parseResponse(this.projectCollection.find().toArray());
+  }
+
+  async getProject(query: any): Promise<null | Project> {
+    await this.start();
+    const result = await this.projectCollection.findOne(query);
+    return result;
+  }
+
+  async deleteAll() {
+    await this.start();
+    await this.projectCollection.deleteMany();
+  }
+
+  async insertProject(projectData: any) {
+    await this.start();
+    const result = await this.projectCollection.insertOne({
+      ...projectData,
+      type: "Classic Business",
+      lead: "Renan Cidale",
+      template: "Kanban",
+      issues: [],
     });
-  });
+
+    return result;
+  }
 }
 
-export function getProjectByQuery(objToValidate: any) {
-  return new Promise((res, rej) => {
-    db.projects.findOne(objToValidate, (_, doc) => {
-      try {
-        res(doc);
-      } catch (e) {
-        rej(e);
-      }
-    });
-  });
-}
-
-export function insertProject(projectDate: CreateProject) {
-  return new Promise((res, rej) => {
-    // inserting the lead hardcoded but it should be
-    // coming from the active user.
-    // template information hardcoded as well since I didn't
-    // want to bother yet with this logic.
-    db.projects.insert(
-      {
-        ...projectDate,
-        type: "Classic Business",
-        lead: "Renan Cidale",
-        template: "Kanban",
-      },
-      (e) => {
-        if (e) {
-          rej();
-        } else {
-          res();
-        }
-      }
-    );
-  });
-}
+export default new ProjectsService();

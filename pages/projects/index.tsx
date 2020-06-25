@@ -1,5 +1,6 @@
 import Close from "@material-ui/icons/Close";
 import { useState } from "react";
+import { useRouter } from "next/router";
 import SearchInput from "../../components/Input/SearchInput";
 import {
   Button,
@@ -14,10 +15,10 @@ import {
 } from "@material-ui/core";
 import { SyntheticEvent } from "react";
 import { useForm } from "react-hook-form";
-import { getProjects } from "../../db/models/projects";
+import ProjectsService from "../../db/models/projects";
 
 export async function getServerSideProps() {
-  const projects = await getProjects();
+  const projects = await ProjectsService.getProjects();
   return {
     props: {
       projects,
@@ -79,6 +80,15 @@ export default function Projects({ projects }: ProjectsPageProps) {
           >
             Create project
           </Button>
+          <button
+            onClick={() => {
+              fetch("/api/projects", { method: "DELETE" })
+                .then(console.info)
+                .catch(console.error);
+            }}
+          >
+            Delete All
+          </button>
         </div>
         <div>
           <div className="flex border border-gray-300 rounded w-56">
@@ -126,6 +136,7 @@ export interface CreateProject {
 }
 
 const CreateProjectForm = () => {
+  const router = useRouter();
   const { handleSubmit, register, setError, watch, errors } = useForm<
     CreateProject
   >({
@@ -147,7 +158,9 @@ const CreateProjectForm = () => {
         }),
         method: "POST",
       });
-    } catch {
+      router.push(`/projects/${projectKey}`);
+    } catch (e) {
+      console.info(e);
       console.log("Something wrong happened");
     }
   };
@@ -156,7 +169,6 @@ const CreateProjectForm = () => {
     const response = await fetch(`/api/validate?${searchParams.toString()}`);
     return response.json();
   };
-  console.info("errors", errors);
   const projectKey = watch("projectName");
 
   return (
@@ -182,7 +194,7 @@ const CreateProjectForm = () => {
             required: true,
             validate: async (val: string) => {
               const { data } = await validateKeyValPair({ name: val });
-              return data.validation;
+              return !data;
             },
           })}
           placeholder="Enter a project name"
@@ -219,11 +231,11 @@ const CreateProjectForm = () => {
               return setError("projectName" as any);
             }
             const { data } = await validateKeyValPair({ key: value });
-            if (!data.validation) {
+            if (data) {
               setError(
                 "projectKey",
                 "validate",
-                `Project '${data.project.name}' uses this project key`
+                `Project '${data.name}' uses this project key`
               );
             }
           }}
