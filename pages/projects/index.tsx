@@ -1,3 +1,4 @@
+import DoneIcon from "@material-ui/icons/Done";
 import Close from "@material-ui/icons/Close";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import { useState, MouseEvent } from "react";
@@ -13,6 +14,8 @@ import {
   Typography,
   Menu,
   MenuItem,
+  Snackbar,
+  IconButton,
 } from "@material-ui/core";
 import Dialog from "@material-ui/core/Dialog";
 import Link from "next/link";
@@ -95,10 +98,16 @@ function MoreIconBtn({
             project from the trash.
           </p>
           <div className="flex justify-end">
-            <button className="text-gray-400 hover:underline mr-2">
+            <button
+              onClick={() => setModalshow(false)}
+              className="text-gray-400 hover:underline mr-2"
+            >
               Cancel
             </button>
-            <button className="bg-red-600 text-white px-2 py-1 rounded">
+            <button
+              onClick={() => (onHandleMoveToTrash(), setModalshow(false))}
+              className="bg-red-600 text-white px-2 py-1 rounded"
+            >
               Move
             </button>
           </div>
@@ -110,18 +119,66 @@ function MoreIconBtn({
 
 export default function Projects({ projects }: ProjectsPageProps) {
   const [drawerState, setDrawerState] = useState(false);
+  const [showSnackbar, setShowSnackbar] = useState(false);
+  // needed to handle removing the project from the list without having to reload the page
+  const [internalProjects, setInternalProjects] = useState(projects);
+  // actual state that's controlling the projects listed.
+  const [filteredProjects, setFilteredProjects] = useState(projects);
 
-  const handleProjectSettings = () => {};
+  const handleProjectSettings = () => {
+    // handle Project settings page...
+  };
 
   const handleMoveToTrash = async (projectKey: string) => {
-    const response = await fetch(`/api/projects/${projectKey}`, {
-      method: "delete",
-    });
-    console.log(response.json());
+    try {
+      await fetch(`/api/projects/${projectKey}`, {
+        method: "delete",
+      });
+      setShowSnackbar(true);
+      const result = internalProjects.filter(
+        (project) => project.key !== projectKey
+      );
+      setInternalProjects(result);
+      setFilteredProjects(result);
+    } catch {}
+  };
+
+  const handleFilterProjects = (e: any) => {
+    const val = e.currentTarget.value.toLowerCase();
+    const result = internalProjects.filter(
+      (project) =>
+        project.key.toLowerCase().includes(val) ||
+        project.name.toLowerCase().includes(val)
+    );
+    setFilteredProjects(result);
   };
 
   return (
     <>
+      <Snackbar
+        autoHideDuration={6000}
+        anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
+        open={showSnackbar}
+        onClose={() => setShowSnackbar(false)}
+      >
+        <div className="shadow-lg p-2 rounded">
+          <DoneIcon
+            fontSize="small"
+            className="text-white bg-green-400 rounded-full mr-4"
+          ></DoneIcon>
+          <span className="text-xs mr-4 font-semibold">
+            Project successfully moved to trash
+          </span>
+          <IconButton
+            size="small"
+            aria-label="close"
+            color="inherit"
+            onClick={() => setShowSnackbar(false)}
+          >
+            <Close fontSize="small"></Close>
+          </IconButton>
+        </div>
+      </Snackbar>
       <Drawer anchor="left" open={drawerState}>
         <div className="w-screen">
           <Button onClick={() => setDrawerState(false)}>
@@ -155,7 +212,10 @@ export default function Projects({ projects }: ProjectsPageProps) {
         </div>
         <div>
           <div className="flex border border-gray-300 rounded w-56">
-            <SearchInput size="small"></SearchInput>
+            <SearchInput
+              size="small"
+              onChange={handleFilterProjects}
+            ></SearchInput>
           </div>
           <Table>
             <TableHead>
@@ -168,9 +228,9 @@ export default function Projects({ projects }: ProjectsPageProps) {
               </TableRow>
             </TableHead>
             <TableBody>
-              {projects?.map((row: any) => {
+              {filteredProjects?.map((row: any) => {
                 return (
-                  <TableRow key={row.name}>
+                  <TableRow key={row.name} className="hover:bg-gray-100">
                     <TableCell>
                       <Link
                         href="/projects/[projectKey]"

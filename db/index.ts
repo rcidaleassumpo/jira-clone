@@ -16,6 +16,6 @@ export default (async () => {
   }
 
   return {
-    projects: db.collection<Project[]>("projects"),
+    projects: db.collection<Project>("projects"),
   };
 })();

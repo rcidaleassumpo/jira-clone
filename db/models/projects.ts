@@ -24,11 +24,17 @@ class ProjectsService {
     return this.parseResponse(projects);
   }
 
-  async getProject(query: any): Promise<null | Project> {
+  async getProject(query: { [key: string]: any }): Promise<null | Project> {
     const result = (await db).projects.findOne(query);
     return this.parseResponse(result);
   }
 
+  async deleteProject(key: string) {
+    console.info(key);
+    const result = (await db).projects.deleteOne({ key });
+    console.info("result", result);
+    return result;
+  }
   async insertProject(projectData: any) {
     const result = (await db).projects.insertOne({
       ...projectData,
