@@ -1,23 +1,20 @@
 import { MongoClient } from "mongodb";
 
-class Database {
-  connection: any;
-  db: any;
-  client: any;
-  constructor() {
-    const mongoURL = process.env.MONGO_DB_URL || "";
-    this.client = new MongoClient(mongoURL, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+let connection;
+let db;
+
+export default (async () => {
+  const mongoURL = process.env.MONGO_DB_URL || "";
+  const client = new MongoClient(mongoURL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
+  if (!connection) {
+    connection = await client.connect();
+    db = connection.db(process.env.MONGO_DB_NAME);
   }
 
-  async start() {
-    if (!this.connection) {
-      this.connection = await this.client.connect();
-    }
-    return this.connection.db(process.env.MONGO_DB_NAME);
-  }
-}
-
-export default new Database();
+  return {
+    projects: db?.collection("projects"),
+  };
+})();
