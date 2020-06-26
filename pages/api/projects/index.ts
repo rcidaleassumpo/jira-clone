@@ -6,9 +6,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     case "POST":
       await ProjectService.insertProject(req.body);
       return res.status(201).send("ok");
-    case "DELETE":
-      await ProjectService.deleteAll();
-      return res.status(201).send("ok");
   }
 };
 
