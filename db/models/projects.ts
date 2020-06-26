@@ -20,17 +20,17 @@ class ProjectsService {
   }
 
   async getProjects() {
-    const projects = (await db).projects?.find().toArray();
+    const projects = (await db).projects.find().toArray();
     return this.parseResponse(projects);
   }
 
   async getProject(query: any): Promise<null | Project> {
-    const result = (await db).projects?.findOne(query);
+    const result = (await db).projects.findOne(query);
     return this.parseResponse(result);
   }
 
   async insertProject(projectData: any) {
-    const result = (await db).projects?.insertOne({
+    const result = (await db).projects.insertOne({
       ...projectData,
       type: "Classic Business",
       lead: "Renan Cidale",

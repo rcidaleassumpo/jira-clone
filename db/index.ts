@@ -1,7 +1,8 @@
-import { MongoClient } from "mongodb";
+import { MongoClient, Db } from "mongodb";
+import { Project } from "./models/projects";
 
 let connection;
-let db;
+let db!: Db;
 
 export default (async () => {
   const mongoURL = process.env.MONGO_DB_URL || "";
@@ -15,6 +16,6 @@ export default (async () => {
   }
 
   return {
-    projects: db?.collection("projects"),
+    projects: db.collection<Project[]>("projects"),
   };
 })();
