@@ -113,7 +113,12 @@ export default function Projects({ projects }: ProjectsPageProps) {
 
   const handleProjectSettings = () => {};
 
-  const handleMoveToTrash = () => {};
+  const handleMoveToTrash = async (projectKey: string) => {
+    const response = await fetch(`/api/projects/${projectKey}`, {
+      method: "delete",
+    });
+    console.log(response.json());
+  };
 
   return (
     <>
@@ -187,7 +192,7 @@ export default function Projects({ projects }: ProjectsPageProps) {
                     </TableCell>
                     <TableCell size="small" className="w-5">
                       <MoreIconBtn
-                        onHandleMoveToTrash={handleMoveToTrash}
+                        onHandleMoveToTrash={() => handleMoveToTrash(row.key)}
                         onHandleProjectSettings={handleProjectSettings}
                       ></MoreIconBtn>
                     </TableCell>
